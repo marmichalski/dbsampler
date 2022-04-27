@@ -27,7 +27,7 @@ class MySqlDriver extends Driver
 
     public function migrateTableTriggersSql(string $tableName): iterable
     {
-        $triggers = $this->connection->fetchAll('SHOW TRIGGERS WHERE `Table`=' . $this->connection->quote($tableName));
+        $triggers = $this->connection->fetchAllAssociative('SHOW TRIGGERS WHERE `Table`=' . $this->connection->quote($tableName));
         if ($triggers && count($triggers) > 0) {
             foreach ($triggers as $trigger) {
                 yield 'CREATE TRIGGER ' . $trigger['Trigger'] . ' ' . $trigger['Timing'] . ' ' . $trigger['Event'] .
@@ -49,7 +49,7 @@ class MySqlDriver extends Driver
 
         $createSql = $createSqlRow['Create View'];
 
-        $currentDestUser = $this->connection->fetchColumn('SELECT CURRENT_USER()');
+        $currentDestUser = $this->connection->fetchOne('SELECT CURRENT_USER()');
 
         if ($currentDestUser) {
             //Because MySQL. SELECT CURRENT_USER() returns an unescaped user

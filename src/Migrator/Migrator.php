@@ -2,7 +2,6 @@
 
 namespace Quidco\DbSampler\Migrator;
 
-use Doctrine\DBAL\Connection;
 use Psr\Log\LoggerInterface;
 use Quidco\DbSampler\Cleaner\FieldCleaner;
 use Quidco\DbSampler\Cleaner\RowCleaner;
@@ -45,7 +44,6 @@ class Migrator
         DestinationDatabase $destination,
         LoggerInterface $logger
     ) {
-    
         $this->source = $source;
         $this->destination = $destination;
         $this->logger = $logger;
@@ -122,13 +120,12 @@ class Migrator
      *
      * @return void
      * @throws \RuntimeException If DB type not supported
-     * @throws \Doctrine\DBAL\DBALException If target trigger cannot be recreated
+     * @throws \Doctrine\DBAL\Exception If target trigger cannot be recreated
      */
     private function migrateTableTriggers(
         string $setName,
         TableCollection $tableCollection
     ): void {
-    
         try {
             foreach ($tableCollection->getTables() as $table => $sampler) {
                 $this->destination->migrateTableTriggers($this->source->getTriggersDefinition($table));
@@ -150,7 +147,6 @@ class Migrator
         string $view,
         string $setName
     ): void {
-    
         $this->destination->dropView($view);
         $this->destination->createView($this->source->getViewDefinition($view));
 
@@ -165,8 +161,6 @@ class Migrator
      */
     private function buildTableSampler(\stdClass $migrationSpec, string $tableName): Sampler
     {
-        $sampler = null;
-
         // @todo: $migrationSpec should be an object with a getSampler() method
         $samplerType = strtolower($migrationSpec->sampler);
         if (array_key_exists($samplerType, SamplerMap::MAP)) {
