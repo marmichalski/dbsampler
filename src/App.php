@@ -189,10 +189,8 @@ class App extends Container implements DatabaseConnectionFactoryInterface, Logge
      * Sets a logger instance on the object.
      *
      * @param LoggerInterface $logger PSR logger
-     *
-     * @return void
      */
-    public function setLogger(LoggerInterface $logger)
+    public function setLogger(LoggerInterface $logger): void
     {
         $this->logger = $logger;
     }

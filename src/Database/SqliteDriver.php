@@ -16,15 +16,15 @@ class SqliteDriver extends Driver
 
     public function createTableSql(string $tableName): string
     {
-        return $this->connection
-            ->query('SELECT sql FROM sqlite_master WHERE type="table" AND tbl_name=' . $this->connection->quoteIdentifier($tableName))
-            ->fetchColumn();
+        return $this->connection->fetchOne(
+            'SELECT sql FROM sqlite_master WHERE type="table" AND tbl_name=' . $this->connection->quoteIdentifier($tableName)
+        );
     }
 
     public function migrateTableTriggersSql(string $tableName): iterable
     {
         $schemaSql = "select sql from sqlite_master where type = 'trigger' AND tbl_name=" . $this->connection->quote($tableName);
-        $triggers = $this->connection->fetchAll($schemaSql);
+        $triggers = $this->connection->fetchAllAssociative($schemaSql);
         if ($triggers && count($triggers) > 0) {
             foreach ($triggers as $trigger) {
                 yield $trigger['sql'];
@@ -41,6 +41,6 @@ class SqliteDriver extends Driver
     {
         $schemaSql = 'SELECT SQL FROM sqlite_master WHERE NAME=' . $this->connection->quoteIdentifier($viewName);
 
-        return $this->connection->query($schemaSql)->fetchColumn();
+        return $this->connection->fetchOne($schemaSql);
     }
 }

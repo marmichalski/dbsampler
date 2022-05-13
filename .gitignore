@@ -6,3 +6,4 @@ sqlite-credentials.json
 .idea
 phpcov.xml
 .php_cs.cache
+.phpunit.result.cache

@@ -2,20 +2,19 @@
 
 namespace Quidco\DbSampler\Database;
 
-use Doctrine\DBAL\Driver\Connection;
+use Doctrine\DBAL\Connection;
 
 class DriverFactory
 {
     public static function getDriver(Connection $connection): Driver
     {
-        if ('pdo_mysql' === $connection->getDriver()->getName()) {
-            return new MySqlDriver($connection);
+        switch (\get_class($connection->getDriver())) {
+            case \Doctrine\DBAL\Driver\PDO\MySQL\Driver::class:
+                return new MySqlDriver($connection);
+            case \Doctrine\DBAL\Driver\PDO\SQLite\Driver::class:
+                return new SqliteDriver($connection);
+            default:
+                throw new \RuntimeException("Unknown database driver");
         }
-
-        if ('pdo_sqlite' === $connection->getDriver()->getName()) {
-            return new SqliteDriver($connection);
-        }
-
-        throw new \RuntimeException("Unknown database driver");
     }
 }
